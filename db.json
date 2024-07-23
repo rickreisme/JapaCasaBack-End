@@ -1,0 +1,85 @@
+{
+    "produtos": [
+        {
+            "id": 1,
+            "nome": "Sushi de Salmão",
+            "preco": 15.00,
+            "quantidade": "200 g",
+            "quantidadeDtd": "Desfrute do nosso sushi de salmão fresco e delicado, uma combinação perfeita de sabores e texturas japonesas autênticas.",
+            "imagem": "https://live.staticflickr.com/65535/53606817360_c2052837d9_b.jpg",
+            "tipo": "sushi"
+        },
+        {
+            "id": 2,
+            "nome": "Temaki de Salmão grelhado",
+            "preco": 27.90,
+            "quantidade": "",
+            "quantidadeDtd": "Uma explosão de sabores japoneses, combinando o frescor do salmão grelhado com a crocância da alga nori e a suavidade do arroz de sushi.",
+            "imagem": "https://live.staticflickr.com/65535/53606353211_eb06a45a2c_b.jpg",
+            "tipo": "temaki"
+        },
+        {
+            "id": 3,
+            "nome": "Niguiri",
+            "preco": 28.90,
+            "quantidade": "500 g",
+            "quantidadeDtd": "Delicie-se com nosso niguiri de salmão fresco: uma combinação perfeita de arroz de sushi e salmão suculento.",
+            "imagem": "https://live.staticflickr.com/65535/53606695919_b3709d81eb_b.jpg",
+            "tipo": "niguiri"
+        },
+        {
+            "id": 4,
+            "nome": "Uramaki Philadelphia",
+            "preco": 22.90,
+            "quantidade": "300 g",
+            "quantidadeDtd": "Salmão fresco, cream cheese, pepino, arroz de sushi e gergelim torrado. Explosão de sabores e texturas.",
+            "imagem": "https://live.staticflickr.com/65535/53606822465_fd3cf048d0_b.jpg",
+            "tipo": "uramaki"
+        },
+        {
+            "id": 5,
+            "nome": "Yakisoba Executivo",
+            "preco": 39.90,
+            "quantidade": "500 g",
+            "quantidadeDtd": "Uma deliciosa mistura de macarrão de trigo refogado com legumes crocantes, carne ou frango, regado com nosso molho especial yakisoba,",
+            "imagem": "https://live.staticflickr.com/65535/53606822905_e6fe5e520e_b.jpg",
+            "tipo": "yakisoba"
+        },
+        {
+            "id": 6,
+            "nome": "Hot Roll",
+            "preco": 15.90,
+            "quantidade": "8 unidades, 100 g",
+            "quantidadeDtd": "Com recheio de salmão ou camarão, envolto em alga nori e arroz de sushi, frito crocante e servido com molho picante e cremoso.",
+            "imagem": "https://live.staticflickr.com/65535/53606355151_87a12fd051_b.jpg",
+            "tipo": "sushi"
+        },
+        {
+            "id": 7,
+            "nome": "Combo Japa 55",
+            "preco": 75.90,
+            "quantidade": "55 unidades",
+            "quantidadeDtd": "15 sashimis variados, 4 niguiris variados, 10 Uramakis Filadélfia, 8 Uramakis Skin, 10 Hot Filadélfia e 8 Makis de Salmão",
+            "imagem": "https://live.staticflickr.com/65535/53606697729_839e0a2468_b.jpg",
+            "tipo": "combo"
+        },
+        {
+            "id": 8,
+            "nome": "Combo Japa 34",
+            "preco": 70.90,
+            "quantidade": "34 unidades",
+            "quantidadeDtd": "10 sashimi variados, 8 Makis de Salmão, 4 niguiri variados, 10 Uramakis Filadélfia e 2 Gunkas de Salmão.",
+            "imagem": "https://live.staticflickr.com/65535/53606698079_3381392aa7_b.jpg",
+            "tipo": "combo"
+        },
+        {
+            "id": 9,
+            "nome": "Combo Japa Salmão",
+            "preco": 85.90,
+            "quantidade": "34 unidades",
+            "quantidadeDtd": "10 Sashimis de Salmão, 8 Makis de Salmão, 4 Niguiris de Salmão, 2 Gunkas Salmão e 10 Uramakis Filadélfia.",
+            "imagem": "https://live.staticflickr.com/65535/53605484242_d4080e317e_b.jpg",
+            "tipo": "combo"
+        }
+    ]
+}
