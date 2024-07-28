@@ -41,7 +41,7 @@
             "nome": "Yakisoba Executivo",
             "preco": 39.90,
             "quantidade": "500 g",
-            "quantidadeDtd": "Uma deliciosa mistura de macarrão de trigo refogado com legumes crocantes, carne ou frango, regado com nosso molho especial yakisoba,",
+            "quantidadeDtd": "Uma deliciosa mistura de macarrão de trigo refogado com legumes crocantes, carne ou frango, regado com nosso molho especial yakisoba.",
             "imagem": "https://live.staticflickr.com/65535/53606822905_e6fe5e520e_b.jpg",
             "tipo": "yakisoba"
         },
@@ -59,7 +59,7 @@
             "nome": "Combo Japa 55",
             "preco": 75.90,
             "quantidade": "55 unidades",
-            "quantidadeDtd": "15 sashimis variados, 4 niguiris variados, 10 Uramakis Filadélfia, 8 Uramakis Skin, 10 Hot Filadélfia e 8 Makis de Salmão",
+            "quantidadeDtd": "15 sashimis variados, 4 niguiris variados, 10 Uramakis Filadélfia, 8 Uramakis Skin, 10 Hot Filadélfia e 8 Makis de Salmão.",
             "imagem": "https://live.staticflickr.com/65535/53606697729_839e0a2468_b.jpg",
             "tipo": "combo"
         },
