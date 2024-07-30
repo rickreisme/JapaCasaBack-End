@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 const dbPath = path.join(__dirname, "db.json");
+const cartPath = path.join(__dirname, "cart.json");
 
 app.get("/produtos", (req, res) => {
   try {
@@ -19,6 +20,45 @@ app.get("/produtos", (req, res) => {
     res.json(produtos);
   } catch (err) {
     console.error("Erro ao ler o arquivo db.json", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
+app.post("/carrinho", (req, res) => {
+  try {
+    const { produto, quantidade, observacoes } = req.body;
+
+    if (!produto || quantidade == null || quantidade <= 0) {
+      return res.status(400).json({ error: "Dados do produto inválidos" });
+    }
+
+    let cartData = [];
+    if (fs.existsSync(cartPath)) {
+      const cartContent = fs.readFileSync(cartPath, "utf-8");
+      cartData = JSON.parse(cartContent);
+    }
+
+    const itemIndex = cartData.findIndex((item) => item.id === produto.id);
+    if (itemIndex > -1) {
+      cartData[itemIndex].quantidadeCarrinho += quantidadeCarrinho;
+      cartData[itemIndex].observacoes = observacoes;
+    } else {
+      cartData.push({
+        id: id,
+        nome: nome,
+        preco: preco,
+        quantidadeCarrinho: quantidadeCarrinho,
+        observacoes: observacoes,
+      });
+    }
+
+    fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
+
+    res
+      .status(200)
+      .json({ message: "Produto adicionado ao carrinho com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao adicionar produto ao carrinho", err);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
