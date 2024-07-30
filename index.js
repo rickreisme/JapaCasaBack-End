@@ -26,9 +26,9 @@ app.get("/produtos", (req, res) => {
 
 app.post("/carrinho", (req, res) => {
   try {
-    const { produto, quantidade, observacoes } = req.body;
+    const { id, nome, preco, quantidadeCarrinho, observacoes } = req.body;
 
-    if (!produto || quantidade == null || quantidade <= 0) {
+    if (!id || !nome || !preco || quantidadeCarrinho == null || quantidadeCarrinho <= 0) {
       return res.status(400).json({ error: "Dados do produto inválidos" });
     }
 
@@ -44,11 +44,11 @@ app.post("/carrinho", (req, res) => {
       cartData[itemIndex].observacoes = observacoes;
     } else {
       cartData.push({
-        id: id,
-        nome: nome,
-        preco: preco,
-        quantidadeCarrinho: quantidadeCarrinho,
-        observacoes: observacoes,
+        id,
+        nome,
+        preco,
+        quantidadeCarrinho,
+        observacoes,
       });
     }
 
