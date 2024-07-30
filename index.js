@@ -24,6 +24,17 @@ app.get("/produtos", (req, res) => {
   }
 });
 
+app.get("/carrinho", (req, res) => {
+  try {
+    const data = fs.readFileSync(cartPath, "utf-8");
+    const carrinho = JSON.parse(data).carrinho;
+    res.json(carrinho);
+  } catch (err) {
+    console.error("Erro ao ler o arquivo cart.json", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
 app.post("/carrinho", (req, res) => {
   try {
     const { id, nome, preco, quantidadeCarrinho, observacoes } = req.body;
