@@ -99,7 +99,7 @@ app.delete("/carrinho/:id", (req, res) => {
     const itemIndex = cartData.carrinho.findIndex(
       (item) => item.id === Number(id)
     );
-    if (itemIndex === 1) {
+    if (itemIndex === -1) {
       return res
         .status(404)
         .JSON({ error: "Produto não encontrado no carrinho" });
