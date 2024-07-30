@@ -66,8 +66,10 @@ app.post("/carrinho", (req, res) => {
         nome,
         preco,
         quantidadeCarrinho,
-        observacoes: observacoes || "",
+        observacoes,
+        
       });
+      console.log(observacoes)
     }
 
     fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
