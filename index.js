@@ -32,7 +32,7 @@ app.post("/carrinho", (req, res) => {
       return res.status(400).json({ error: "Dados do produto inválidos" });
     }
 
-    let cartData = [];
+    let cartData = { carrinho: [] };
     if (fs.existsSync(cartPath)) {
       const cartContent = fs.readFileSync(cartPath, "utf-8");
       cartData = JSON.parse(cartContent);
@@ -43,7 +43,7 @@ app.post("/carrinho", (req, res) => {
       cartData[itemIndex].quantidadeCarrinho += quantidadeCarrinho;
       cartData[itemIndex].observacoes = observacoes;
     } else {
-      cartData.push({
+      cartData.carrinho.push({
         id,
         nome,
         preco,
