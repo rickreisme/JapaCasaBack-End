@@ -52,6 +52,7 @@ app.post("/carrinho", (req, res) => {
     const itemIndex = cartData.carrinho.findIndex((item) => item.id === id);
     if (itemIndex > -1) {
       cartData.carrinho[itemIndex].quantidadeCarrinho += quantidadeCarrinho;
+      cartData.carrinho[itemIndex].preco += preco;
       cartData.carrinho[itemIndex].observacoes = observacoes;
     } else {
       cartData.carrinho.push({
