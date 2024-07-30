@@ -38,10 +38,10 @@ app.post("/carrinho", (req, res) => {
       cartData = JSON.parse(cartContent);
     }
 
-    const itemIndex = cartData.findIndex((item) => item.id === id);
+    const itemIndex = cartData.carrinho.findIndex((item) => item.id === id);
     if (itemIndex > -1) {
-      cartData[itemIndex].quantidadeCarrinho += quantidadeCarrinho;
-      cartData[itemIndex].observacoes = observacoes;
+      cartData.carrinho[itemIndex].quantidadeCarrinho += quantidadeCarrinho;
+      cartData.carrinho[itemIndex].observacoes = observacoes;
     } else {
       cartData.carrinho.push({
         id,
