@@ -66,7 +66,7 @@ app.post("/carrinho", (req, res) => {
         nome,
         preco,
         quantidadeCarrinho,
-        observacoes,
+        observacoes: observacoes || "",
       });
     }
 
