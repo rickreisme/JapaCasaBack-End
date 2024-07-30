@@ -39,7 +39,13 @@ app.post("/carrinho", (req, res) => {
   try {
     const { id, nome, preco, quantidadeCarrinho, observacoes } = req.body;
 
-    if (!id || !nome || !preco || quantidadeCarrinho == null || quantidadeCarrinho <= 0) {
+    if (
+      !id ||
+      !nome ||
+      !preco ||
+      quantidadeCarrinho == null ||
+      quantidadeCarrinho <= 0
+    ) {
       return res.status(400).json({ error: "Dados do produto inválidos" });
     }
 
@@ -72,6 +78,42 @@ app.post("/carrinho", (req, res) => {
       .json({ message: "Produto adicionado ao carrinho com sucesso!" });
   } catch (err) {
     console.error("Erro ao adicionar produto ao carrinho", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
+app.delete("/carrinho/:id", (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: "ID do produto não fornecido" });
+  }
+
+  try {
+    let cartData = { carrinho: [] };
+    if (fs.existsSync(cartPath)) {
+      const cartContent = fs.readFileSync(cartPath, "utf-8");
+      cartData = JSON.parse(cartContent);
+    }
+
+    const itemIndex = cartData.carrinho.findIndex(
+      (item) => item.id === Number(id)
+    );
+    if (itemIndex === 1) {
+      return res
+        .status(404)
+        .JSON({ error: "Produto não encontrado no carrinho" });
+    }
+
+    cartData.carrinho.splice(itemIndex, 1);
+    fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
+    console.log(`Produto com ID ${id} removido do carrinho`);
+
+    res
+      .status(200)
+      .json({ message: "Produto removido do carrinho com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao remover produto do carrinho", err);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
