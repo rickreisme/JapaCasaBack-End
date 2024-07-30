@@ -53,6 +53,7 @@ app.post("/carrinho", (req, res) => {
     }
 
     fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
+    console.log("Produto adicionado ao carrinho:", cartData);
 
     res
       .status(200)
