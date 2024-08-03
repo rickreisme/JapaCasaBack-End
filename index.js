@@ -67,9 +67,8 @@ app.post("/carrinho", (req, res) => {
         preco,
         quantidadeCarrinho,
         observacoes,
-        
       });
-      console.log(observacoes)
+      console.log(observacoes);
     }
 
     fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
@@ -80,6 +79,46 @@ app.post("/carrinho", (req, res) => {
       .json({ message: "Produto adicionado ao carrinho com sucesso!" });
   } catch (err) {
     console.error("Erro ao adicionar produto ao carrinho", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
+app.put("/carrinho/:id", (req, res) => {
+  const { id } = req.params;
+  const { quantidadeCarrinho } = req.body;
+
+  if (!id || quantidadeCarrinho == null || quantidadeCarrinho <= 0) {
+    return res.status(400).json({ error: "Dados do produto inválidos" });
+  }
+
+  try {
+    let cartData = { carrinho: [] };
+    if (fs.existsSync(cartPath)) {
+      const cartContent = fs.readFileSync(cartPath, "utf-8");
+      cartData = JSON.parse(cartContent);
+    }
+
+    const itemIndex = cartData.carrinho.findIndex(
+      (item) => item.id === Number(id)
+    );
+    if (itemIndex === -1) {
+      return res
+        .status(404)
+        .json({ error: "Produto não encontrado no carrinho" });
+    }
+
+    cartData.carrinho[itemIndex].quantidadeCarrinho = quantidadeCarrinho;
+    cartData.carrinho[itemIndex].preco =
+      (cartData.carrinho[itemIndex].preco /
+        cartData.carrinho[itemIndex].quantidadeCarrinho) *
+      quantidadeCarrinho;
+
+    fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
+    console.log(`Quantidade do produto com ID ${id} atualizada`);
+
+    res.status(200).json({ message: "Quantidade atualizada com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao atualizar quantidade do produto", err);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
