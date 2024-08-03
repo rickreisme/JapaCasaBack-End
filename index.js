@@ -28,7 +28,13 @@ app.get("/carrinho", (req, res) => {
   try {
     const data = fs.readFileSync(cartPath, "utf-8");
     const carrinho = JSON.parse(data).carrinho;
-    res.json(carrinho);
+
+    const valorTotal = carrinho.reduce(
+      (total, item) => total + item.preco * item.quantidadeCarrinho,
+      0
+    );
+
+    res.json({ carrinho, valorTotal });
   } catch (err) {
     console.error("Erro ao ler o arquivo cart.json", err);
     res.status(500).json({ error: "Erro interno no servidor" });
@@ -71,7 +77,15 @@ app.post("/carrinho", (req, res) => {
       console.log(observacoes);
     }
 
-    fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
+    const valorTotal = cartData.carrinho.reduce(
+      (total, item) => total + item.preco * item.quantidadeCarrinho,
+      0
+    );
+
+    fs.writeFileSync(
+      cartPath,
+      JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2)
+    );
     console.log("Produto adicionado ao carrinho:", cartData);
 
     res
@@ -115,7 +129,15 @@ app.put("/carrinho/:id", (req, res) => {
     cartData.carrinho[itemIndex].quantidadeCarrinho = quantidadeCarrinho;
     cartData.carrinho[itemIndex].preco = preco;
 
-    fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
+    const valorTotal = cartData.carrinho.reduce(
+      (total, item) => total + item.preco * item.quantidadeCarrinho,
+      0
+    );
+
+    fs.writeFileSync(
+      cartPath,
+      JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2)
+    );
     console.log(`Quantidade do produto com ID ${id} atualizada`);
 
     res
@@ -151,7 +173,12 @@ app.delete("/carrinho/:id", (req, res) => {
     }
 
     cartData.carrinho.splice(itemIndex, 1);
-    fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
+
+    const valorTotal = cartData.carrinho.reduce((total, item) =>
+      total + item.preco * item.quantidadeCarrinho, 0
+    );
+  
+    fs.writeFileSync(cartPath, JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2));
     console.log(`Produto com ID ${id} removido do carrinho`);
 
     res
