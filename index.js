@@ -85,9 +85,14 @@ app.post("/carrinho", (req, res) => {
 
 app.put("/carrinho/:id", (req, res) => {
   const { id } = req.params;
-  const { quantidadeCarrinho } = req.body;
+  const { quantidadeCarrinho, preco } = req.body;
 
-  if (!id || quantidadeCarrinho == null || quantidadeCarrinho <= 0) {
+  if (
+    !id ||
+    quantidadeCarrinho == null ||
+    quantidadeCarrinho <= 0 ||
+    preco == null
+  ) {
     return res.status(400).json({ error: "Dados do produto inválidos" });
   }
 
@@ -108,15 +113,14 @@ app.put("/carrinho/:id", (req, res) => {
     }
 
     cartData.carrinho[itemIndex].quantidadeCarrinho = quantidadeCarrinho;
-    cartData.carrinho[itemIndex].preco =
-      (cartData.carrinho[itemIndex].preco /
-        cartData.carrinho[itemIndex].quantidadeCarrinho) *
-      quantidadeCarrinho;
+    cartData.carrinho[itemIndex].preco = preco;
 
     fs.writeFileSync(cartPath, JSON.stringify(cartData, null, 2));
     console.log(`Quantidade do produto com ID ${id} atualizada`);
 
-    res.status(200).json({ message: "Quantidade atualizada com sucesso!" });
+    res
+      .status(200)
+      .json({ message: "Quantidade e preço atualizados com sucesso!" });
   } catch (err) {
     console.error("Erro ao atualizar quantidade do produto", err);
     res.status(500).json({ error: "Erro interno no servidor" });
