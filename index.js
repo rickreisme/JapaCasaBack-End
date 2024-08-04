@@ -174,10 +174,11 @@ app.delete("/carrinho/:id", (req, res) => {
 
     cartData.carrinho.splice(itemIndex, 1);
 
-    const valorTotal = cartData.carrinho.reduce((total, item) =>
-      total + item.preco * item.quantidadeCarrinho, 0
+    const valorTotal = cartData.carrinho.reduce(
+      (total, item) => total + item.preco * item.quantidadeCarrinho,
+      0
     );
-  
+    
     fs.writeFileSync(cartPath, JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2));
     console.log(`Produto com ID ${id} removido do carrinho`);
 
