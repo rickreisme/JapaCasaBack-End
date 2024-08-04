@@ -29,8 +29,8 @@ app.get("/carrinho", (req, res) => {
     const data = fs.readFileSync(cartPath, "utf-8");
     const carrinho = JSON.parse(data).carrinho;
 
-    const valorTotal = carrinho.reduce(
-      (total, item) => total + item.preco * item.quantidadeCarrinho,
+    const valorTotal = cartData.carrinho.reduce(
+      (total, item) => total + item.preco,
       0
     );
 
@@ -78,7 +78,7 @@ app.post("/carrinho", (req, res) => {
     }
 
     const valorTotal = cartData.carrinho.reduce(
-      (total, item) => total + item.preco * item.quantidadeCarrinho,
+      (total, item) => total + item.preco,
       0
     );
 
@@ -130,7 +130,7 @@ app.put("/carrinho/:id", (req, res) => {
     cartData.carrinho[itemIndex].preco = preco;
 
     const valorTotal = cartData.carrinho.reduce(
-      (total, item) => total + item.preco * item.quantidadeCarrinho,
+      (total, item) => total + item.preco,
       0
     );
 
@@ -175,11 +175,14 @@ app.delete("/carrinho/:id", (req, res) => {
     cartData.carrinho.splice(itemIndex, 1);
 
     const valorTotal = cartData.carrinho.reduce(
-      (total, item) => total + item.preco * item.quantidadeCarrinho,
+      (total, item) => total + item.preco,
       0
     );
-    
-    fs.writeFileSync(cartPath, JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2));
+
+    fs.writeFileSync(
+      cartPath,
+      JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2)
+    );
     console.log(`Produto com ID ${id} removido do carrinho`);
 
     res
