@@ -29,7 +29,7 @@ app.get("/carrinho", (req, res) => {
     const data = fs.readFileSync(cartPath, "utf-8");
     const carrinho = JSON.parse(data).carrinho;
 
-    const valorTotal = cartData.carrinho.reduce(
+    const valorTotal = carrinho.reduce(
       (total, item) => total + item.preco,
       0
     );
