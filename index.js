@@ -29,12 +29,11 @@ app.get("/carrinho", (req, res) => {
     const data = fs.readFileSync(cartPath, "utf-8");
     const carrinho = JSON.parse(data).carrinho;
 
-    const valorTotal = carrinho.reduce(
-      (total, item) => total + item.preco,
-      0
-    );
+    const valorTotal = carrinho.reduce((total, item) => total + item.preco, 0);
 
-    res.json({ carrinho, valorTotal });
+    const valorTotalFrete = valorTotal + 5;
+
+    res.json({ carrinho, valorTotal, valorTotalFrete });
   } catch (err) {
     console.error("Erro ao ler o arquivo cart.json", err);
     res.status(500).json({ error: "Erro interno no servidor" });
@@ -82,9 +81,15 @@ app.post("/carrinho", (req, res) => {
       0
     );
 
+    const valorTotalFrete = valorTotal + 5;
+
     fs.writeFileSync(
       cartPath,
-      JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2)
+      JSON.stringify(
+        { carrinho: cartData.carrinho, valorTotal, valorTotalFrete },
+        null,
+        2
+      )
     );
     console.log("Produto adicionado ao carrinho:", cartData);
 
@@ -134,9 +139,15 @@ app.put("/carrinho/:id", (req, res) => {
       0
     );
 
+    const valorTotalFrete = valorTotal + 5;
+
     fs.writeFileSync(
       cartPath,
-      JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2)
+      JSON.stringify(
+        { carrinho: cartData.carrinho, valorTotal, valorTotalFrete },
+        null,
+        2
+      )
     );
     console.log(`Quantidade do produto com ID ${id} atualizada`);
 
@@ -183,7 +194,11 @@ app.delete("/carrinho/:id", (req, res) => {
 
     fs.writeFileSync(
       cartPath,
-      JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2)
+      JSON.stringify(
+        { carrinho: cartData.carrinho, valorTotal, valorTotalFrete },
+        null,
+        2
+      )
     );
     console.log(`Produto com ID ${id} removido do carrinho`);
 
