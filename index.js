@@ -179,6 +179,8 @@ app.delete("/carrinho/:id", (req, res) => {
       0
     );
 
+    const valorTotalFrete = valorTotal + 5;
+
     fs.writeFileSync(
       cartPath,
       JSON.stringify({ carrinho: cartData.carrinho, valorTotal }, null, 2)
