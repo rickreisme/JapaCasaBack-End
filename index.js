@@ -42,11 +42,13 @@ app.get("/carrinho", (req, res) => {
 
 app.post("/carrinho", (req, res) => {
   try {
-    const { id, nome, preco, quantidadeCarrinho, observacoes } = req.body;
+    const { id, nome, imagem, preco, quantidadeCarrinho, observacoes } =
+      req.body;
 
     if (
       !id ||
       !nome ||
+      !imagem ||
       !preco ||
       quantidadeCarrinho == null ||
       quantidadeCarrinho <= 0
@@ -69,6 +71,7 @@ app.post("/carrinho", (req, res) => {
       cartData.carrinho.push({
         id,
         nome,
+        imagem,
         preco,
         quantidadeCarrinho,
         observacoes,
