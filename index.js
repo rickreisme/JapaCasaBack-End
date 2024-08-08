@@ -44,6 +44,7 @@ app.post("/carrinho", (req, res) => {
   try {
     const { id, nome, imagem, preco, quantidadeCarrinho, observacoes } =
       req.body;
+    console.log("Dados recebidos no POST:", req.body);
 
     if (
       !id ||
@@ -108,6 +109,12 @@ app.post("/carrinho", (req, res) => {
 app.put("/carrinho/:id", (req, res) => {
   const { id } = req.params;
   const { quantidadeCarrinho, preco } = req.body;
+  console.log(
+    "Atualizando produto com ID:",
+    id,
+    "Quantidade:",
+    quantidadeCarrinho
+  );
 
   if (
     !id ||
@@ -136,6 +143,8 @@ app.put("/carrinho/:id", (req, res) => {
 
     cartData.carrinho[itemIndex].quantidadeCarrinho = quantidadeCarrinho;
     cartData.carrinho[itemIndex].preco = preco;
+
+    console.log(quantidadeCarrinho)
 
     const valorTotal = cartData.carrinho.reduce(
       (total, item) => total + item.preco,
