@@ -13,6 +13,26 @@ app.use(express.json());
 const dbPath = path.join(__dirname, "db.json");
 const cartPath = path.join(__dirname, "cart.json");
 
+const loadCartData = (sessionId) => {
+  if (fs.existsSync(cartPath)) {
+    const cartContent = fs.readFileSync(cartPath, "utf-8");
+    const cartData = JSON.parse(cartContent);
+    return cartData[sessionId] || { carrinho: [] };
+  }
+  return { carrinho: [] };
+};
+
+const saveCartData = (sessionId, cartData) => {
+  let allCartData = {};
+
+  if (fs.existsSync(cartPath)) {
+    const cartContent = fs.readFileSync(cartPath, "utf-8");
+    allCartData = JSON.parse(cartContent);
+  }
+  allCartData[sessionId] = cartData;
+  fs.writeFileSync(cartPath, JSON.stringify(allCartData, null, 2));
+};
+
 app.get("/produtos", (req, res) => {
   try {
     const data = fs.readFileSync(dbPath, "utf-8");
@@ -26,14 +46,13 @@ app.get("/produtos", (req, res) => {
 
 app.get("/carrinho", (req, res) => {
   try {
-    const data = fs.readFileSync(cartPath, "utf-8");
-    const carrinho = JSON.parse(data).carrinho;
+    const sessionId = req.headers["session-id"];
+    const cartData = loadCartData(sessionId);
 
     const valorTotal = carrinho.reduce((total, item) => total + item.preco, 0);
-
     const valorTotalFrete = valorTotal + 5;
 
-    res.json({ carrinho, valorTotal, valorTotalFrete });
+    res.json({ carrinho: cartData.carrinho, valorTotal, valorTotalFrete });
   } catch (err) {
     console.error("Erro ao ler o arquivo cart.json", err);
     res.status(500).json({ error: "Erro interno no servidor" });
@@ -44,7 +63,6 @@ app.post("/carrinho", (req, res) => {
   try {
     const { id, nome, imagem, preco, quantidadeCarrinho, observacoes } =
       req.body;
-    console.log("Dados recebidos no POST:", req.body);
 
     if (
       !id ||
@@ -57,11 +75,7 @@ app.post("/carrinho", (req, res) => {
       return res.status(400).json({ error: "Dados do produto inválidos" });
     }
 
-    let cartData = { carrinho: [] };
-    if (fs.existsSync(cartPath)) {
-      const cartContent = fs.readFileSync(cartPath, "utf-8");
-      cartData = JSON.parse(cartContent);
-    }
+    const cartData = loadCartData(sessionId);
 
     const itemIndex = cartData.carrinho.findIndex((item) => item.id === id);
     if (itemIndex > -1) {
@@ -77,26 +91,19 @@ app.post("/carrinho", (req, res) => {
         quantidadeCarrinho,
         observacoes,
       });
-      console.log(observacoes);
     }
 
     const valorTotal = cartData.carrinho.reduce(
       (total, item) => total + item.preco,
       0
     );
-
     const valorTotalFrete = valorTotal + 5;
 
-    fs.writeFileSync(
-      cartPath,
-      JSON.stringify(
-        { carrinho: cartData.carrinho, valorTotal, valorTotalFrete },
-        null,
-        2
-      )
-    );
-    console.log("Produto adicionado ao carrinho:", cartData);
-
+    saveCartData(sessionId, {
+      carrinho: cartData.carrinho,
+      valorTotal,
+      valorTotalFrete,
+    });
     res
       .status(200)
       .json({ message: "Produto adicionado ao carrinho com sucesso!" });
@@ -108,13 +115,8 @@ app.post("/carrinho", (req, res) => {
 
 app.put("/carrinho/:id", (req, res) => {
   const { id } = req.params;
+  const sessionId = req.headers["session-id"];
   const { quantidadeCarrinho, preco } = req.body;
-  console.log(
-    "Atualizando produto com ID:",
-    id,
-    "Quantidade:",
-    quantidadeCarrinho
-  );
 
   if (
     !id ||
@@ -126,11 +128,7 @@ app.put("/carrinho/:id", (req, res) => {
   }
 
   try {
-    let cartData = { carrinho: [] };
-    if (fs.existsSync(cartPath)) {
-      const cartContent = fs.readFileSync(cartPath, "utf-8");
-      cartData = JSON.parse(cartContent);
-    }
+    const cartData = loadCartData(sessionId);
 
     const itemIndex = cartData.carrinho.findIndex(
       (item) => item.id === Number(id)
@@ -144,24 +142,17 @@ app.put("/carrinho/:id", (req, res) => {
     cartData.carrinho[itemIndex].quantidadeCarrinho = quantidadeCarrinho;
     cartData.carrinho[itemIndex].preco = preco;
 
-    console.log(quantidadeCarrinho)
-
     const valorTotal = cartData.carrinho.reduce(
       (total, item) => total + item.preco,
       0
     );
-
     const valorTotalFrete = valorTotal + 5;
 
-    fs.writeFileSync(
-      cartPath,
-      JSON.stringify(
-        { carrinho: cartData.carrinho, valorTotal, valorTotalFrete },
-        null,
-        2
-      )
-    );
-    console.log(`Quantidade do produto com ID ${id} atualizada`);
+    saveCartData(sessionId, {
+      carrinho: cartData.carrinho,
+      valorTotal,
+      valorTotalFrete,
+    });
 
     res
       .status(200)
@@ -174,17 +165,10 @@ app.put("/carrinho/:id", (req, res) => {
 
 app.delete("/carrinho/:id", (req, res) => {
   const { id } = req.params;
-
-  if (!id) {
-    return res.status(400).json({ error: "ID do produto não fornecido" });
-  }
+  const sessionId = req.headers["session-id"];
 
   try {
-    let cartData = { carrinho: [] };
-    if (fs.existsSync(cartPath)) {
-      const cartContent = fs.readFileSync(cartPath, "utf-8");
-      cartData = JSON.parse(cartContent);
-    }
+    const cartData = loadCartData(sessionId);
 
     const itemIndex = cartData.carrinho.findIndex(
       (item) => item.id === Number(id)
@@ -201,18 +185,13 @@ app.delete("/carrinho/:id", (req, res) => {
       (total, item) => total + item.preco,
       0
     );
-
     const valorTotalFrete = valorTotal + 5;
 
-    fs.writeFileSync(
-      cartPath,
-      JSON.stringify(
-        { carrinho: cartData.carrinho, valorTotal, valorTotalFrete },
-        null,
-        2
-      )
-    );
-    console.log(`Produto com ID ${id} removido do carrinho`);
+    saveCartData(sessionId, {
+      carrinho: cartData.carrinho,
+      valorTotal,
+      valorTotalFrete,
+    });
 
     res
       .status(200)
