@@ -49,7 +49,7 @@ app.get("/carrinho", (req, res) => {
     const sessionId = req.headers["session-id"];
     const cartData = loadCartData(sessionId);
 
-    const valorTotal = carrinho.reduce((total, item) => total + item.preco, 0);
+    const valorTotal = cartData.carrinho.reduce((total, item) => total + item.preco, 0);
     const valorTotalFrete = valorTotal + 5;
 
     res.json({ carrinho: cartData.carrinho, valorTotal, valorTotalFrete });
@@ -60,6 +60,8 @@ app.get("/carrinho", (req, res) => {
 });
 
 app.post("/carrinho", (req, res) => {
+  const sessionId = req.headers["session-id"];
+  
   try {
     const { id, nome, imagem, preco, quantidadeCarrinho, observacoes } =
       req.body;
