@@ -61,7 +61,7 @@ app.get("/carrinho", (req, res) => {
 
 app.post("/carrinho", (req, res) => {
   const sessionId = req.headers["session-id"];
-  
+
   try {
     const { id, nome, imagem, preco, quantidadeCarrinho, observacoes } =
       req.body;
