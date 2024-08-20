@@ -12,6 +12,7 @@ app.use(express.json());
 
 const dbPath = path.join(__dirname, "db.json");
 const cartPath = path.join(__dirname, "cart.json");
+const pedidoPath = path.join(__dirname, "order.json");
 
 const loadCartData = (sessionId) => {
   if (fs.existsSync(cartPath)) {
@@ -229,6 +230,42 @@ app.delete("/limpar", (req, res) => {
     res.status(200).json({ message: "Carrinho limpo com sucesso!" });
   } catch (err) {
     console.error("Erro ao limpar o carrinho", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
+app.post("/pedido/confirmar", (req, res) => {
+  const sessionId = req.headers["session-id"];
+
+  if (!sessionId) {
+    return res.status(400).json({ error: "Session ID não fornecido" });
+  }
+
+  const { carrinho, endereco } = req.body;
+
+  if (!carrinho || carrinho.length === 0) {
+    return res.status(400).json({ error: "Carrinho está vazio" });
+  }
+
+  if (!endereco || Object.keys(endereco).length === 0) {
+    return res.status(400).json({ error: "Endereço não fornecido" });
+  }
+
+  try {
+    let allOrderData = {};
+
+    if (fs.existsSync(pedidoPath)) {
+      const orderContent = fs.readFileSync(pedidoPath, "utf-8");
+      allOrderData = JSON.parse(orderContent);
+    }
+
+    allOrderData[sessionId] = { carrinho, endereco };
+
+    fs.writeFileSync(pedidoPath, JSON.stringify(allOrderData, null, 2));
+
+    res.status(200).json({ message: "Pedido confirmado com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao confirmar pedido", err);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
