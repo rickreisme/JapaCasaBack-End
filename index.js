@@ -75,8 +75,8 @@ app.get("/pedido/confirmar", (req, res) => {
       return res.status(404).json({ error: "Nenhum pedido encontrado" });
     }
 
-    const pedidosContent = fs.readFileSync(pedidoPath, "utf-8");
-    const pedidosData = JSON.parse(pedidosContent);
+    const pedidoContent = fs.readFileSync(pedidoPath, "utf-8");
+    const pedidosData = JSON.parse(pedidoContent);
 
     if (!pedidosData[sessionId]) {
       return res.status(404).json({ error: "Pedido não encontrado para esta sessão" });
@@ -89,7 +89,6 @@ app.get("/pedido/confirmar", (req, res) => {
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
-
 
 app.post("/carrinho", (req, res) => {
   const sessionId = req.headers["session-id"];
