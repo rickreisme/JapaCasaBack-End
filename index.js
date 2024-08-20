@@ -65,6 +65,8 @@ app.get("/carrinho", (req, res) => {
 
 app.get("/pedido/confirmar", (req, res) => {
   try {
+    const sessionId = req.headers["session-id"];
+
     if (!sessionId) {
       return res.status(400).json({ error: "Session ID não fornecido" });
     }
@@ -77,9 +79,7 @@ app.get("/pedido/confirmar", (req, res) => {
     const pedidosData = JSON.parse(pedidosContent);
 
     if (!pedidosData[sessionId]) {
-      return res
-        .status(404)
-        .json({ error: "Pedido não encontrado para esta sessão" });
+      return res.status(404).json({ error: "Pedido não encontrado para esta sessão" });
     }
 
     const pedido = pedidosData[sessionId];
@@ -89,6 +89,7 @@ app.get("/pedido/confirmar", (req, res) => {
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
+
 
 app.post("/carrinho", (req, res) => {
   const sessionId = req.headers["session-id"];
