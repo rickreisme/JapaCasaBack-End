@@ -63,6 +63,33 @@ app.get("/carrinho", (req, res) => {
   }
 });
 
+app.get("/pedido/confirmar", (req, res) => {
+  try {
+    if (!sessionId) {
+      return res.status(400).json({ error: "Session ID não fornecido" });
+    }
+
+    if (!fs.existsSync(pedidoPath)) {
+      return res.status(404).json({ error: "Nenhum pedido encontrado" });
+    }
+
+    const pedidosContent = fs.readFileSync(pedidoPath, "utf-8");
+    const pedidosData = JSON.parse(pedidosContent);
+
+    if (!pedidosData[sessionId]) {
+      return res
+        .status(404)
+        .json({ error: "Pedido não encontrado para esta sessão" });
+    }
+
+    const pedido = pedidosData[sessionId];
+    res.status(200).json(pedido);
+  } catch (err) {
+    console.error("Erro ao ler o arquivo order.json", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
 app.post("/carrinho", (req, res) => {
   const sessionId = req.headers["session-id"];
 
