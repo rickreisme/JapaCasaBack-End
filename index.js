@@ -49,7 +49,10 @@ app.get("/carrinho", (req, res) => {
     const sessionId = req.headers["session-id"];
     const cartData = loadCartData(sessionId);
 
-    const valorTotal = cartData.carrinho.reduce((total, item) => total + item.preco, 0);
+    const valorTotal = cartData.carrinho.reduce(
+      (total, item) => total + item.preco,
+      0
+    );
     const valorTotalFrete = valorTotal + 5;
 
     res.json({ carrinho: cartData.carrinho, valorTotal, valorTotalFrete });
@@ -200,6 +203,32 @@ app.delete("/carrinho/:id", (req, res) => {
       .json({ message: "Produto removido do carrinho com sucesso!" });
   } catch (err) {
     console.error("Erro ao remover produto do carrinho", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
+app.delete("/limpar", (req, res) => {
+  const sessionId = req.headers["session-id"];
+
+  try {
+    let allCartData = {};
+
+    if (fs.existsSync(cartPath)) {
+      const cartContent = fs.readFileSync(cartPath, "utf-8");
+      allCartData = JSON.parse(cartContent);
+    }
+
+    if (!allCartData[sessionId]) {
+      return res.status(404).json({ error: "Carrinho não encontrado" });
+    }
+
+    allCartData[sessionId] = { carrinho: [] };
+
+    fs.writeFileSync(cartPath, JSON.stringify(allCartData, null, 2));
+
+    res.status(200).json({ message: "Carrinho limpo com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao limpar o carrinho", err);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
