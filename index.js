@@ -78,12 +78,25 @@ app.get("/pedido/confirmar", (req, res) => {
     const pedidoContent = fs.readFileSync(pedidoPath, "utf-8");
     const pedidosData = JSON.parse(pedidoContent);
 
+    const pedidosDoUsuario = Object.entries(pedidosData).filter(
+      ([pedidoId, pedido]) => pedido.sessionId === sessionId
+    );
+
     if (!pedidosData[sessionId]) {
-      return res.status(404).json({ error: "Pedido não encontrado para esta sessão" });
+      return res
+        .status(404)
+        .json({ error: "Pedido não encontrado para esta sessão" });
     }
 
     const pedido = pedidosData[sessionId];
-    res.status(200).json(pedido);
+    res
+      .status(200)
+      .json(
+        pedidosDoUsuario.map(([pedidoId, pedido]) => ({
+          id: pedidoId,
+          ...pedido,
+        }))
+      );
   } catch (err) {
     console.error("Erro ao ler o arquivo order.json", err);
     res.status(500).json({ error: "Erro interno no servidor" });
@@ -142,6 +155,46 @@ app.post("/carrinho", (req, res) => {
       .json({ message: "Produto adicionado ao carrinho com sucesso!" });
   } catch (err) {
     console.error("Erro ao adicionar produto ao carrinho", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
+  }
+});
+
+app.post("/pedido/confirmar", (req, res) => {
+  const sessionId = req.headers["session-id"];
+
+  if (!sessionId) {
+    return res.status(400).json({ error: "Session ID não fornecido" });
+  }
+
+  const { carrinho, endereco, usuario } = req.body;
+
+  if (!carrinho || carrinho.length === 0) {
+    return res.status(400).json({ error: "Carrinho está vazio" });
+  }
+
+  if (!endereco || Object.keys(endereco).length === 0) {
+    return res.status(400).json({ error: "Endereço não fornecido" });
+  }
+
+  try {
+    let allOrderData = {};
+
+    if (fs.existsSync(pedidoPath)) {
+      const orderContent = fs.readFileSync(pedidoPath, "utf-8");
+      allOrderData = JSON.parse(orderContent);
+    }
+
+    const pedidoId = Date.now().toString();
+
+    allOrderData[pedidoId] = { carrinho, endereco, usuario, sessionId };
+
+    fs.writeFileSync(pedidoPath, JSON.stringify(allOrderData, null, 2));
+
+    res
+      .status(200)
+      .json({ message: "Pedido confirmado com sucesso!", id: pedidoId });
+  } catch (err) {
+    console.error("Erro ao confirmar pedido", err);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
@@ -257,42 +310,6 @@ app.delete("/limpar", (req, res) => {
     res.status(200).json({ message: "Carrinho limpo com sucesso!" });
   } catch (err) {
     console.error("Erro ao limpar o carrinho", err);
-    res.status(500).json({ error: "Erro interno no servidor" });
-  }
-});
-
-app.post("/pedido/confirmar", (req, res) => {
-  const sessionId = req.headers["session-id"];
-
-  if (!sessionId) {
-    return res.status(400).json({ error: "Session ID não fornecido" });
-  }
-
-  const { carrinho, endereco, usuario} = req.body;
-
-  if (!carrinho || carrinho.length === 0) {
-    return res.status(400).json({ error: "Carrinho está vazio" });
-  }
-
-  if (!endereco || Object.keys(endereco).length === 0) {
-    return res.status(400).json({ error: "Endereço não fornecido" });
-  }
-
-  try {
-    let allOrderData = {};
-
-    if (fs.existsSync(pedidoPath)) {
-      const orderContent = fs.readFileSync(pedidoPath, "utf-8");
-      allOrderData = JSON.parse(orderContent);
-    }
-
-    allOrderData[sessionId] = { carrinho, endereco, usuario };
-
-    fs.writeFileSync(pedidoPath, JSON.stringify(allOrderData, null, 2));
-
-    res.status(200).json({ message: "Pedido confirmado com sucesso!" });
-  } catch (err) {
-    console.error("Erro ao confirmar pedido", err);
     res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
