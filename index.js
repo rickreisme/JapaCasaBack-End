@@ -268,7 +268,7 @@ app.post("/pedido/confirmar", (req, res) => {
     return res.status(400).json({ error: "Session ID não fornecido" });
   }
 
-  const { carrinho, endereco } = req.body;
+  const { carrinho, endereco, usuario} = req.body;
 
   if (!carrinho || carrinho.length === 0) {
     return res.status(400).json({ error: "Carrinho está vazio" });
@@ -286,7 +286,7 @@ app.post("/pedido/confirmar", (req, res) => {
       allOrderData = JSON.parse(orderContent);
     }
 
-    allOrderData[sessionId] = { carrinho, endereco };
+    allOrderData[sessionId] = { carrinho, endereco, usuario };
 
     fs.writeFileSync(pedidoPath, JSON.stringify(allOrderData, null, 2));
 
