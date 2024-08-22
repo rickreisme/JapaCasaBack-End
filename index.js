@@ -78,20 +78,20 @@ app.get("/pedido/confirmar", (req, res) => {
     const pedidoContent = fs.readFileSync(pedidoPath, "utf-8");
     const pedidosData = JSON.parse(pedidoContent);
 
-    if (!pedidosData[sessionId]) {
+    const pedidosDoUsuario = Object.entries(pedidosData)
+      .filter(([_, pedido]) => pedido.sessionId == sessionId)
+      .map(([pedidoId, pedido]) => ({
+        id: pedidoId,
+        ...pedido,
+      }));
+
+    if (pedidosDoUsuario.length === 0) {
       return res
         .status(404)
         .json({ error: "Nenhum pedido encontrado para esta sessão" });
     }
 
-    const pedidosDoUsuario = pedidosData[sessionId];
-
-    res.status(200).json(
-      pedidosDoUsuario.map(([pedido]) => ({
-        id: pedido.pedidoId,
-        ...pedido,
-      }))
-    );
+    res.status(200).json(pedidosDoUsuario);
   } catch (err) {
     console.error("Erro ao ler o arquivo order.json", err);
     res.status(500).json({ error: "Erro interno no servidor" });
