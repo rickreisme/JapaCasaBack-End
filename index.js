@@ -186,7 +186,7 @@ app.post("/pedido/confirmar", (req, res) => {
 
     const pedidoId = Date.now().toString();
 
-    allOrderData[sessionId] = { carrinho, endereco, usuario, pedidoId };
+    allOrderData[pedidoId] = { carrinho, endereco, usuario, sessionId };
 
     fs.writeFileSync(pedidoPath, JSON.stringify(allOrderData, null, 2));
 
