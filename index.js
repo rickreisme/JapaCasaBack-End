@@ -165,6 +165,12 @@ app.post("/pedido/confirmar", (req, res) => {
     return res.status(400).json({ error: "Endereço não fornecido" });
   }
 
+  if (!usuario || !usuario.id) {
+    return res
+      .status(400)
+      .json({ error: "Usuário ou ID do usuário não fornecidos" });
+  }
+
   try {
     let allOrderData = {};
 
