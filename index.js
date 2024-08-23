@@ -161,11 +161,7 @@ app.post("/pedido/confirmar", (req, res) => {
     return res.status(400).json({ error: "Session ID não fornecido" });
   }
 
-  const { carrinho, endereco, usuario } = req.body;
-
-  if (!carrinho || carrinho.length === 0) {
-    return res.status(400).json({ error: "Carrinho está vazio" });
-  }
+  const { endereco, usuario } = req.body;
 
   if (!endereco || Object.keys(endereco).length === 0) {
     return res.status(400).json({ error: "Endereço não fornecido" });
@@ -181,7 +177,7 @@ app.post("/pedido/confirmar", (req, res) => {
 
     const pedidoId = Date.now().toString();
 
-    allOrderData[pedidoId] = { carrinho, endereco, usuario, sessionId };
+    allOrderData[pedidoId] = { endereco, usuario, sessionId };
 
     fs.writeFileSync(pedidoPath, JSON.stringify(allOrderData, null, 2));
 
