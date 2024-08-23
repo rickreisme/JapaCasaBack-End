@@ -14,23 +14,23 @@ const dbPath = path.join(__dirname, "db.json");
 const cartPath = path.join(__dirname, "cart.json");
 const pedidoPath = path.join(__dirname, "order.json");
 
-const loadCartData = (sessionId) => {
+const loadCartData = (userId) => {
   if (fs.existsSync(cartPath)) {
     const cartContent = fs.readFileSync(cartPath, "utf-8");
     const cartData = JSON.parse(cartContent);
-    return cartData[sessionId] || { carrinho: [] };
+    return cartData[userId] || { carrinho: [] };
   }
   return { carrinho: [] };
 };
 
-const saveCartData = (sessionId, cartData) => {
+const saveCartData = (userId, cartData) => {
   let allCartData = {};
 
   if (fs.existsSync(cartPath)) {
     const cartContent = fs.readFileSync(cartPath, "utf-8");
     allCartData = JSON.parse(cartContent);
   }
-  allCartData[sessionId] = cartData;
+  allCartData[userId] = cartData;
   fs.writeFileSync(cartPath, JSON.stringify(allCartData, null, 2));
 };
 
@@ -47,8 +47,8 @@ app.get("/produtos", (req, res) => {
 
 app.get("/carrinho", (req, res) => {
   try {
-    const sessionId = req.headers["session-id"];
-    const cartData = loadCartData(sessionId);
+    const userId = req.headers["user-id"];
+    const cartData = loadCartData(userId);
 
     const valorTotal = cartData.carrinho.reduce(
       (total, item) => total + item.preco,
@@ -65,10 +65,10 @@ app.get("/carrinho", (req, res) => {
 
 app.get("/pedido/confirmar", (req, res) => {
   try {
-    const sessionId = req.headers["session-id"];
+    const userId = req.headers["user-id"];
 
-    if (!sessionId) {
-      return res.status(400).json({ error: "Session ID não fornecido" });
+    if (!userId) {
+      return res.status(400).json({ error: "User ID não fornecido" });
     }
 
     if (!fs.existsSync(pedidoPath)) {
@@ -79,13 +79,13 @@ app.get("/pedido/confirmar", (req, res) => {
     const pedidosData = JSON.parse(pedidoContent);
 
     const pedidoDoUsuario = Object.entries(pedidosData).find(
-      ([_, pedido]) => pedido.sessionId === sessionId
+      ([_, pedido]) => pedido.userId === userId
     );
 
     if (!pedidoDoUsuario) {
       return res
         .status(404)
-        .json({ error: "Nenhum pedido encontrado para esta sessão" });
+        .json({ error: "Nenhum pedido encontrado para este usuário" });
     }
 
     const [pedidoId, pedido] = pedidoDoUsuario;
@@ -97,7 +97,7 @@ app.get("/pedido/confirmar", (req, res) => {
 });
 
 app.post("/carrinho", (req, res) => {
-  const sessionId = req.headers["session-id"];
+  const userId = req.headers["user-id"];
 
   try {
     const { id, nome, imagem, preco, quantidadeCarrinho, observacoes } =
@@ -114,7 +114,7 @@ app.post("/carrinho", (req, res) => {
       return res.status(400).json({ error: "Dados do produto inválidos" });
     }
 
-    const cartData = loadCartData(sessionId);
+    const cartData = loadCartData(userId);
 
     const itemIndex = cartData.carrinho.findIndex((item) => item.id === id);
     if (itemIndex > -1) {
@@ -138,7 +138,7 @@ app.post("/carrinho", (req, res) => {
     );
     const valorTotalFrete = valorTotal + 5;
 
-    saveCartData(sessionId, {
+    saveCartData(userId, {
       carrinho: cartData.carrinho,
       valorTotal,
       valorTotalFrete,
@@ -153,10 +153,10 @@ app.post("/carrinho", (req, res) => {
 });
 
 app.post("/pedido/confirmar", (req, res) => {
-  const sessionId = req.headers["session-id"];
+  const userId = req.headers["user-id"];
 
-  if (!sessionId) {
-    return res.status(400).json({ error: "Session ID não fornecido" });
+  if (!userId) {
+    return res.status(400).json({ error: "User ID não fornecido" });
   }
 
   const { endereco, usuario } = req.body;
@@ -181,7 +181,7 @@ app.post("/pedido/confirmar", (req, res) => {
 
     const pedidoId = Date.now().toString();
 
-    allOrderData[pedidoId] = { endereco, usuario, sessionId };
+    allOrderData[pedidoId] = { endereco, usuario, userId };
 
     fs.writeFileSync(pedidoPath, JSON.stringify(allOrderData, null, 2));
 
@@ -196,7 +196,7 @@ app.post("/pedido/confirmar", (req, res) => {
 
 app.put("/carrinho/:id", (req, res) => {
   const { id } = req.params;
-  const sessionId = req.headers["session-id"];
+  const userId = req.headers["user-id"];
   const { quantidadeCarrinho, preco } = req.body;
 
   if (
@@ -209,7 +209,7 @@ app.put("/carrinho/:id", (req, res) => {
   }
 
   try {
-    const cartData = loadCartData(sessionId);
+    const cartData = loadCartData(userId);
 
     const itemIndex = cartData.carrinho.findIndex(
       (item) => item.id === Number(id)
@@ -229,7 +229,7 @@ app.put("/carrinho/:id", (req, res) => {
     );
     const valorTotalFrete = valorTotal + 5;
 
-    saveCartData(sessionId, {
+    saveCartData(userId, {
       carrinho: cartData.carrinho,
       valorTotal,
       valorTotalFrete,
@@ -246,10 +246,10 @@ app.put("/carrinho/:id", (req, res) => {
 
 app.delete("/carrinho/:id", (req, res) => {
   const { id } = req.params;
-  const sessionId = req.headers["session-id"];
+  const userId = req.headers["user-id"];
 
   try {
-    const cartData = loadCartData(sessionId);
+    const cartData = loadCartData(userId);
 
     const itemIndex = cartData.carrinho.findIndex(
       (item) => item.id === Number(id)
@@ -257,7 +257,7 @@ app.delete("/carrinho/:id", (req, res) => {
     if (itemIndex === -1) {
       return res
         .status(404)
-        .JSON({ error: "Produto não encontrado no carrinho" });
+        .json({ error: "Produto não encontrado no carrinho" });
     }
 
     cartData.carrinho.splice(itemIndex, 1);
@@ -268,7 +268,7 @@ app.delete("/carrinho/:id", (req, res) => {
     );
     const valorTotalFrete = valorTotal + 5;
 
-    saveCartData(sessionId, {
+    saveCartData(userId, {
       carrinho: cartData.carrinho,
       valorTotal,
       valorTotalFrete,
@@ -284,7 +284,7 @@ app.delete("/carrinho/:id", (req, res) => {
 });
 
 app.delete("/limpar", (req, res) => {
-  const sessionId = req.headers["session-id"];
+  const userId = req.headers["user-id"];
 
   try {
     let allCartData = {};
@@ -294,11 +294,11 @@ app.delete("/limpar", (req, res) => {
       allCartData = JSON.parse(cartContent);
     }
 
-    if (!allCartData[sessionId]) {
+    if (!allCartData[userId]) {
       return res.status(404).json({ error: "Carrinho não encontrado" });
     }
 
-    allCartData[sessionId] = { carrinho: [] };
+    allCartData[userId] = { carrinho: [] };
 
     fs.writeFileSync(cartPath, JSON.stringify(allCartData, null, 2));
 
